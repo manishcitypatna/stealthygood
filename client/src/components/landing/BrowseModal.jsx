@@ -2,26 +2,26 @@ import React, { useState, useEffect, useRef } from 'react';
 import './BrowseModal.css';
 
 const allApps = [
-  { id: 'gmail', label: 'Gmail', icon: 'gmail' },
-  { id: 'hubspot', label: 'Hubspot', icon: 'hubspot' },
-  { id: 'outlook', label: 'Outlook', icon: 'outlook' },
-  { id: 'notion', label: 'Notion', icon: 'notion' },
-  { id: 'gdrive', label: 'Google Drive', icon: 'g-drive' },
-  { id: 'gsheets', label: 'Google Sheets', icon: 'g-sheets' },
-  { id: 'dropbox', label: 'Dropbox', icon: 'dropbox' },
-  { id: 'trello', label: 'Trello', icon: 'trello' },
-  { id: 'figma', label: 'Figma', icon: 'figma' },
-  { id: 'elevenlabs', label: 'Elevenlabs', icon: 'elevenlabs' },
-  { id: 'copilot', label: 'Copilot', icon: 'copilot' },
-  { id: 'n8n', label: 'n8n', icon: 'n8n' },
-  { id: 'nvidia', label: 'Nvidia', icon: 'nvidia' },
-  { id: 'openai', label: 'OpenAI', icon: 'openai' },
-  { id: 'openrouter', label: 'Openrouter', icon: 'openrouter' },
-  { id: 'perplexity', label: 'Perplexity', icon: 'perplexity' },
-  { id: 'huggingface', label: 'Huggingface', icon: 'huggingface' },
-  { id: 'meta', label: 'Meta', icon: 'meta' },
-  { id: 'microsoft', label: 'Microsoft', icon: 'microsoft' },
-  { id: 'midjourney', label: 'Midjourney', icon: 'midjourney' }
+  { id: 'gmail', label: 'Gmail', icon: 'gmail', ready: true },
+  { id: 'hubspot', label: 'Hubspot', icon: 'hubspot', ready: true },
+  { id: 'outlook', label: 'Outlook', icon: 'outlook', ready: true },
+  { id: 'notion', label: 'Notion', icon: 'notion', ready: false },
+  { id: 'gdrive', label: 'Google Drive', icon: 'g-drive', ready: false },
+  { id: 'gsheets', label: 'Google Sheets', icon: 'g-sheets', ready: false },
+  { id: 'dropbox', label: 'Dropbox', icon: 'dropbox', ready: false },
+  { id: 'trello', label: 'Trello', icon: 'trello', ready: false },
+  { id: 'figma', label: 'Figma', icon: 'figma', ready: false },
+  { id: 'elevenlabs', label: 'Elevenlabs', icon: 'elevenlabs', ready: false },
+  { id: 'copilot', label: 'Copilot', icon: 'copilot', ready: false },
+  { id: 'n8n', label: 'n8n', icon: 'n8n', ready: false },
+  { id: 'nvidia', label: 'Nvidia', icon: 'nvidia', ready: false },
+  { id: 'openai', label: 'OpenAI', icon: 'openai', ready: false },
+  { id: 'openrouter', label: 'Openrouter', icon: 'openrouter', ready: false },
+  { id: 'perplexity', label: 'Perplexity', icon: 'perplexity', ready: false },
+  { id: 'huggingface', label: 'Huggingface', icon: 'huggingface', ready: false },
+  { id: 'meta', label: 'Meta', icon: 'meta', ready: false },
+  { id: 'microsoft', label: 'Microsoft', icon: 'microsoft', ready: false },
+  { id: 'midjourney', label: 'Midjourney', icon: 'midjourney', ready: false }
 ];
 
 const BrowseModal = ({ isOpen, onClose, onSelectApp }) => {
@@ -87,27 +87,17 @@ const BrowseModal = ({ isOpen, onClose, onSelectApp }) => {
         
         <div className="browse-grid">
           {filteredApps.map(app => (
-            <div 
-              key={app.id} 
-              className="browse-item" 
-              tabIndex={0} 
-              role="button" 
-              aria-label={`Connect ${app.label}`}
-              onClick={() => handleAppClick(app)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  handleAppClick(app);
-                }
-              }}
-            >
-              <img 
-                src={`/src/assets/icons/${app.icon}.svg`} 
-                alt={`${app.label} icon`}
-                className="browse-item-icon"
-              />
-              <span className="browse-item-label">{app.label}</span>
-            </div>
+        <div
+          key={app.id}
+          className={`browse-item ${!app.ready ? 'disabled' : ''}`}
+          tabIndex={app.ready ? 0 : -1}
+          role="button"
+          aria-label={`Connect ${app.label}`}
+          onClick={app.ready ? () => handleAppClick(app) : undefined}
+        >
+          <img src={`/icons/${app.icon}.svg`} alt={`${app.label} icon`} className="browse-item-icon" />
+          <span className="browse-item-label">{app.label}</span>
+        </div>
           ))}
         </div>
         

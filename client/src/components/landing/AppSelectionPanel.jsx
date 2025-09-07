@@ -7,7 +7,7 @@ const apps = [
   { id: 'gmail', label: 'Connect with Gmail', icon: 'gmail' },
   { id: 'hubspot', label: 'Connect with Hubspot', icon: 'hubspot' },
   { id: 'outlook', label: 'Connect with Outlook', icon: 'outlook' },
-  { id: 'figma', label: 'Connect with Figma', icon: 'figma' }
+  { id: "streak", label: "Connect with Streak", icon: "streak" },
 ];
 
 const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
@@ -111,7 +111,7 @@ const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
         </button>
         
         <p className="panel-footer">
-          For any kind of query, kindly contact your administration.
+          For any inquiries, please reach out to your administration.
         </p>
       </div>
 

@@ -7,7 +7,7 @@ const NavigationBar = () => {
       {/* Logo */}
       <div className="nav-logo">
         <img 
-          src="/src/assets/icons/Logo.png" 
+          src="/public/icons/Logo.png" 
           alt="Stealthy Good" 
           className="logo-image"
         />

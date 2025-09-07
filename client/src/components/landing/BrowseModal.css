@@ -11,6 +11,11 @@
   z-index: 1000;
   backdrop-filter: blur(8px);
 }
+.browse-item.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 
 /* EXACTLY SAME AS APP SELECTION CARD */
 .browse-modal {
