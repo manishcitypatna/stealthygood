@@ -1,0 +1,177 @@
+/* EXACT SAME CARD DESIGN AS APP SELECTION PANEL */
+.status-panel {
+  width: 400px;
+  height: fit-content;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  padding: 50px 40px;
+  text-align: center;
+  
+  /* SAME ANIMATED GRADIENT BACKGROUND */
+  background: linear-gradient(135deg, #4b0082 0%, #dd7afd 25%, #6500ea 50%, #8b5cf6 75%, #dd7afd 100%);
+  background-size: 200% 200%;
+  background-attachment: fixed;
+  animation: gradientShift 12s ease-in-out infinite;
+  
+  border: none;
+  outline: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+/* SAME GRADIENT ANIMATION */
+@keyframes gradientShift {
+  0% { 
+    background-position: 0% 50%;
+    transform: scale(1);
+  }
+  25% {
+    background-position: 50% 0%;
+  }
+  50% { 
+    background-position: 100% 50%;
+    transform: scale(1.01);
+  }
+  75% {
+    background-position: 50% 100%;
+  }
+  100% { 
+    background-position: 0% 50%;
+    transform: scale(1);
+  }
+}
+
+.status-panel > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* WHITE CIRCLE WITH ICON */
+.status-icon-container {
+  width: 80px;
+  height: 80px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  animation: iconBounce 0.6s ease-out;
+}
+
+@keyframes iconBounce {
+  0% { 
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* STATUS TITLE */
+.status-title {
+  color: white;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  margin-top: 0;
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+
+/* STATUS MESSAGE */
+.status-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: 40px;
+  margin-top: 0;
+  max-width: 280px;
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+
+/* CLOSE BUTTON - CAPSULE SHAPE */
+.status-close-btn {
+  width: 120px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #4b0082;
+  border: none;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+  animation: fadeInUp 0.6s ease-out 0.6s both;
+}
+
+.status-close-btn:hover {
+  background: white;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 25px rgba(255, 255, 255, 0.15);
+}
+
+/* FOOTER TEXT */
+.status-footer {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  margin: 0;
+  animation: fadeInUp 0.6s ease-out 0.8s both;
+}
+
+/* FADE IN UP ANIMATION */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .status-panel {
+    width: 95%;
+    max-width: 380px;
+    padding: 40px 30px;
+  }
+  
+  .status-icon-container {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .status-title {
+    font-size: 1.5rem;
+  }
+  
+  .status-message {
+    font-size: 0.9rem;
+  }
+  
+  .status-close-btn {
+    width: 100px;
+    height: 44px;
+    font-size: 0.9rem;
+  }
+}
