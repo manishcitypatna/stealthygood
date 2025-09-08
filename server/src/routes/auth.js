@@ -242,6 +242,8 @@ router.post('/callback', async (req, res) => {
             token_type: tokens.token_type || 'Bearer',
             expires_in: tokens.expires_in,
           },
+          sendAdditionalBodyProperties: false,
+          additionalBodyProperties: {}
         },
       };
     } else if (provider === 'outlook') {
@@ -254,6 +256,7 @@ router.post('/callback', async (req, res) => {
           grant_type: 'authorization_code',
           redirect_uri: process.env.MS_REDIRECT_URI,
         });
+        
       } catch (err) {
         console.error('Microsoft token exchange error:', err.response?.data || err.message);
         return res.json({ success: false, message: 'Failed to exchange code for Microsoft tokens' });
@@ -276,6 +279,8 @@ router.post('/callback', async (req, res) => {
             token_type: tokens.token_type || 'Bearer',
             expires_in: tokens.expires_in,
           },
+          sendAdditionalBodyProperties: false,
+          additionalBodyProperties: {}
         },
       };
     } else {
