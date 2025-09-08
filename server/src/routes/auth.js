@@ -1,6 +1,6 @@
+// server/src/routes/auth.js
 const express = require('express');
 const axios = require('axios');
-
 const router = express.Router();
 
 const N8N_BASE = (process.env.N8N_API_URL || '').replace(/\/+$/, '');
@@ -13,6 +13,7 @@ const saveCredentialToN8n = async (payload) => {
   if (!process.env.N8N_API_URL || !process.env.N8N_API_KEY) {
     throw new Error('n8n API configuration missing');
   }
+
   const { data } = await axios.post(`${N8N_BASE}/api/v1/credentials`, payload, {
     headers: N8N_HEADERS,
   });
@@ -44,9 +45,11 @@ router.get('/test', (req, res) => {
   });
 });
 
-// Gmail OAuth route
+// Gmail OAuth route (returns authUrl)
 router.post('/gmail', (req, res) => {
+  console.log("👉 Gmail route hit with body:", req.body);
   const { name, email } = req.body;
+  console.log("✅ Generating Gmail OAuth URL for:", name, email);
 
   const googleAuthUrl =
     `https://accounts.google.com/o/oauth2/v2/auth?` +
@@ -63,19 +66,28 @@ router.post('/gmail', (req, res) => {
     authUrl: googleAuthUrl,
     message: 'Gmail OAuth URL generated successfully',
     provider: 'gmail',
+    userInfo: { name, email }
   });
 });
 
-// HubSpot API integration route
+// HubSpot API integration route - UPDATED
 router.post('/hubspot', async (req, res) => {
+  console.log("👉 HubSpot route hit with body:", req.body);
   try {
     const { name, email } = req.body;
     const apiKey = req.body.apiKey || req.body.apiToken; // accept both
 
     if (!apiKey) {
-      return res.json({ success: false, message: 'HubSpot API key is required' });
+      console.log("❌ No HubSpot API key provided");
+      return res.json({ 
+        success: false, 
+        message: 'HubSpot API key is required',
+        provider: 'hubspot',
+        userInfo: { name, email }
+      });
     }
 
+    console.log("✅ Got HubSpot API key, saving to n8n...");
     const n8nCredentialData = {
       name: `Hubspot_${name}_${email}`,
       type: process.env.N8N_HUBSPOT_CRED_TYPE || 'hubspotApi',
@@ -83,6 +95,7 @@ router.post('/hubspot', async (req, res) => {
     };
 
     const saved = await saveCredentialToN8n(n8nCredentialData);
+    console.log("🎉 HubSpot credentials saved to n8n:", saved);
 
     res.json({
       success: true,
@@ -96,14 +109,15 @@ router.post('/hubspot', async (req, res) => {
     res.json({
       success: false,
       message: `Failed to save HubSpot credentials: ${error.response?.data?.message || error.message}`,
+      provider: 'hubspot',
+      userInfo: { name: email } = req.body
     });
   }
 });
 
-// Outlook OAuth route
+// Outlook OAuth route (returns authUrl)
 router.post('/outlook', (req, res) => {
   const { name, email } = req.body;
-
   const msClientId = process.env.MS_CLIENT_ID;
   const msRedirect = process.env.MS_REDIRECT_URI;
   const msScope = process.env.MS_SCOPE || 'offline_access Mail.Read';
@@ -123,19 +137,28 @@ router.post('/outlook', (req, res) => {
     authUrl: microsoftAuthUrl,
     message: 'Outlook OAuth URL generated successfully',
     provider: 'outlook',
+    userInfo: { name, email }
   });
 });
 
-// Streak API integration route
+// Streak API integration route - UPDATED
 router.post('/streak', async (req, res) => {
+  console.log("👉 Streak route hit with body:", req.body);
   try {
     const { name, email } = req.body;
     const token = req.body.token || req.body.apiKey; // accept both
 
     if (!token) {
-      return res.json({ success: false, message: 'Streak API token is required' });
+      console.log("❌ No token provided!");
+      return res.json({ 
+        success: false, 
+        message: 'Streak API token is required',
+        provider: 'streak',
+        userInfo: { name, email }
+      });
     }
 
+    console.log("✅ Got Streak token, trying to save to n8n...");
     const n8nCredentialData = {
       name: `Streak_${name}_${email}`,
       type: process.env.N8N_STREAK_CRED_TYPE || 'streakApi',
@@ -143,6 +166,7 @@ router.post('/streak', async (req, res) => {
     };
 
     const saved = await saveCredentialToN8n(n8nCredentialData);
+    console.log("🎉 Streak credentials saved to n8n:", saved);
 
     res.json({
       success: true,
@@ -152,15 +176,18 @@ router.post('/streak', async (req, res) => {
       credentialId: saved.id,
     });
   } catch (error) {
+    console.error("🔥 Error saving Streak:", error.message);
     console.error('Streak save error:', error.response?.data || error.message);
     res.json({
       success: false,
       message: `Failed to save Streak credentials: ${error.response?.data?.message || error.message}`,
+      provider: 'streak',
+      userInfo: { name, email } = req.body
     });
   }
 });
 
-// OAuth Callback Handler
+// OAuth Callback Handler (handles token exchange + saving)
 router.post('/callback', async (req, res) => {
   try {
     let { code, state, provider } = req.body;
@@ -177,12 +204,13 @@ router.post('/callback', async (req, res) => {
         // keep as-is if not JSON
       }
     }
-    provider = provider || state?.provider;
 
+    provider = provider || state?.provider;
     let tokens = {};
     let n8nPayload = null;
 
     if (provider === 'gmail') {
+      console.log("👉 Gmail callback hit with code:", code, "state:", state);
       // Google token exchange (x-www-form-urlencoded)
       try {
         tokens = await postForm('https://oauth2.googleapis.com/token', {
@@ -260,6 +288,7 @@ router.post('/callback', async (req, res) => {
       return res.json({
         success: true,
         message: `${provider} credentials saved successfully to n8n`,
+        provider: provider,
         userInfo: state,
         credentialId: saved.id,
       });

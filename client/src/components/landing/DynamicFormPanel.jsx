@@ -107,7 +107,7 @@ const DynamicFormPanel = ({ selectedApp, isOpen, onClose, onBack, onSubmit }) =>
       });
       const result = await resp.json();
       if (!result.success) throw new Error(result.message || 'Failed to generate OAuth URL');
-      window.location.href = result.authUrl; // Redirect to provider
+      window.location.href = result.authUrl; // Redirect to provider (Google/MS etc.)
       return;
     }
 
@@ -124,10 +124,13 @@ const DynamicFormPanel = ({ selectedApp, isOpen, onClose, onBack, onSubmit }) =>
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("👉 Submitting form for app:", selectedApp?.id);   // ADD THIS
+    console.log("Form data:", formData);  
     if (!validateForm()) return;
     setIsSubmitting(true);
     try {
       const result = await submitToBackend();
+      console.log("✅ Backend responded:", result);
       if (onSubmit) onSubmit(selectedApp, { ...formData, result });
     } catch (err) {
       console.error('Submission error:', err);
@@ -192,7 +195,11 @@ const DynamicFormPanel = ({ selectedApp, isOpen, onClose, onBack, onSubmit }) =>
 
       <form onSubmit={handleSubmit} className="dynamic-form">
         <div className="form-fields">{config.fields.map(renderField)}</div>
-        <button type="submit" className={`form-submit-btn ${isSubmitting ? 'submitting' : ''}`} disabled={isSubmitting}>
+        <button
+          type="submit"
+          className={`form-submit-btn ${isSubmitting ? 'submitting' : ''}`}
+          disabled={isSubmitting}
+        >
           {isSubmitting ? 'Connecting...' : config.submitText}
         </button>
       </form>

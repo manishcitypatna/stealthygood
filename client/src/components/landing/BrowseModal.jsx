@@ -5,6 +5,7 @@ const allApps = [
   { id: 'gmail', label: 'Gmail', icon: 'gmail', ready: true },
   { id: 'hubspot', label: 'Hubspot', icon: 'hubspot', ready: true },
   { id: 'outlook', label: 'Outlook', icon: 'outlook', ready: true },
+  { id: 'streak', label: 'Streak', icon: 'streak', ready: true },
   { id: 'notion', label: 'Notion', icon: 'notion', ready: false },
   { id: 'gdrive', label: 'Google Drive', icon: 'g-drive', ready: false },
   { id: 'gsheets', label: 'Google Sheets', icon: 'g-sheets', ready: false },

@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import StatusCard from './StatusCard';
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 const OAuthCallback = () => {
-  const [status, setStatus] = useState('processing');
-  const [message, setMessage] = useState('Processing your authentication...');
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -18,8 +15,12 @@ const OAuthCallback = () => {
         const rawState = urlParams.get('state');
 
         if (!code) {
-          setStatus('error');
-          setMessage('Authorization code not found.');
+          // Redirect to error page immediately
+          const params = new URLSearchParams({
+            status: 'error',
+            message: 'Authorization code not found'
+          });
+          window.location.replace(`/success?${params.toString()}`);
           return;
         }
 
@@ -32,8 +33,7 @@ const OAuthCallback = () => {
           }
         }
 
-        setMessage(`Hello ${userInfo.name || ''}! Saving your credentials to n8n...`);
-
+        // Process callback in background
         const response = await fetch(`${API_BASE}/api/auth/callback`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -47,64 +47,39 @@ const OAuthCallback = () => {
         const result = await response.json();
 
         if (result.success) {
-          setStatus('success');
-          setMessage(
-            `✅ Success! Your ${userInfo.provider} account has been connected and saved to n8n.`
-          );
+          // Redirect to beautiful success page immediately
+          const params = new URLSearchParams({
+            provider: userInfo.provider,
+            name: userInfo.name || '',
+            email: userInfo.email || '',
+            status: 'success'
+          });
+          window.location.replace(`/success?${params.toString()}`);
         } else {
-          setStatus('error');
-          setMessage(`Error: ${result.message || 'Failed to save credentials'}`);
+          // Redirect to error page immediately
+          const params = new URLSearchParams({
+            provider: userInfo.provider,
+            status: 'error',
+            message: result.message || 'Failed to save credentials'
+          });
+          window.location.replace(`/success?${params.toString()}`);
         }
       } catch (error) {
         console.error('Callback error:', error);
-        setStatus('error');
-        setMessage('An error occurred while processing your authentication.');
+        // Redirect to error page immediately
+        const params = new URLSearchParams({
+          status: 'error',
+          message: 'An error occurred while processing your authentication'
+        });
+        window.location.replace(`/success?${params.toString()}`);
       }
     };
 
     handleCallback();
-  }, [location]);
+  }, [location, navigate]);
 
-  // Render different cards based on status
-  if (status === 'processing') {
-    return (
-      <StatusCard
-        type="success"
-        title="Processing..."
-        message={message}
-        redirectAfterMs={0}  // no auto-redirect during processing
-        redirectTo="/"
-      />
-    );
-  }
-
-  if (status === 'success') {
-    return (
-      <StatusCard
-        type="success"
-        title="Success!"
-        message={message}
-        redirectAfterMs={10000}
-        redirectTo="/"
-        onClose={() => navigate('/')}
-      />
-    );
-  }
-
-  if (status === 'error') {
-    return (
-      <StatusCard
-        type="error"
-        title="Error"
-        message={message}
-        redirectAfterMs={10000}
-        redirectTo="/"
-        onClose={() => navigate('/')}
-      />
-    );
-  }
-
-  return null;
+  // Show absolutely minimal loading state - no UI components
+  return null; // Return nothing to avoid any flicker
 };
 
 export default OAuthCallback;

@@ -114,6 +114,7 @@ const AuthForm = ({ app, onSubmit, onCancel, loading }) => {
             <button type="button" onClick={onCancel} className="btn-cancel">
               Cancel
             </button>
+            console.log('AuthForm render - loading:', loading, 'showForm:', showForm);
             <button type="submit" disabled={loading} className="btn-connect">
               {loading ? 'Connecting...' : `Connect to ${app.displayName}`}
             </button>

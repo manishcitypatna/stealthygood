@@ -1,36 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-
 import NavigationBar from '../landing/NavigationBar';
 import AnimatedBackground from '../landing/AnimatedBackground';
 import StatusCard from './StatusCard';
 import './SuccessPage.css';
 
-/**
- * SuccessPage
- * - Wraps StatusCard inside the same AnimatedBackground + NavigationBar used by landing page
- * - Places the StatusCard on the LEFT (fixed) and a floating robot image on the RIGHT
- * - Keeps the StatusCard dynamic (reads provider/name/email from URL params)
- * - Uses redirectAfterMs on StatusCard (10s) to navigate back to "/"
- */
-const SuccessPage = () => {
+const SuccessPage = ({ data, onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const [appInfo, setAppInfo] = useState(null);
+  const [pageData, setPageData] = useState(null);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(location.search);
-    const provider = urlParams.get('provider');
-    const name = urlParams.get('name');
-    const email = urlParams.get('email');
-
-    if (provider || name || email) {
-      setAppInfo({ provider, name, email });
+    // If data is passed as prop (from MainApp), use it
+    if (data) {
+      setPageData(data);
     } else {
-      setAppInfo(null);
+      // Otherwise, get data from URL params (for OAuth callback flow)
+      const urlParams = new URLSearchParams(location.search);
+      const provider = urlParams.get('provider');
+      const name = urlParams.get('name');
+      const email = urlParams.get('email');
+      const status = urlParams.get('status') || 'success';
+      const message = urlParams.get('message');
+
+      console.log('SuccessPage URL params:', { provider, name, email, status, message });
+
+      setPageData({
+        provider,
+        name,
+        email,
+        status,
+        message
+      });
     }
-  }, [location.search]);
+  }, [data, location.search]);
 
   const getAppDisplayName = (provider) => {
     const displayNames = {
@@ -42,50 +45,89 @@ const SuccessPage = () => {
     return displayNames[provider] || provider || 'the app';
   };
 
-  const message = appInfo
-    ? (
-      <div>
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>
-          {`✅ Success! Your ${getAppDisplayName(appInfo.provider)} account has been connected.`}
-        </div>
-        {appInfo.name && (
-          <div style={{ color: '#f3f3f3', fontSize: '0.95rem', marginBottom: 6 }}>
-            {`Account: ${appInfo.name} (${appInfo.email || ''})`}
-          </div>
-        )}
-        <div style={{ marginTop: 6, fontStyle: 'italic', color: 'rgba(255,255,255,0.85)', fontSize: '0.9rem' }}>
-          Redirecting you back to the main page...
-        </div>
-      </div>
-    )
-    : '✅ Success! Your account has been connected. Redirecting you back to the main page...';
+  const getStatusMessage = () => {
+    if (!pageData) return '';
+
+    if (pageData.status === 'error') {
+      return pageData.message || 'An error occurred while processing your request.';
+    }
+
+    if (pageData.provider && pageData.name) {
+      return (
+        <>
+          <strong>{pageData.name}</strong>, your <strong>{getAppDisplayName(pageData.provider)}</strong> account 
+          has been successfully connected and saved to n8n automation platform.
+          <br /><br />
+          You can now create powerful automated workflows using your connected account.
+        </>
+      );
+    }
+
+    return 'Your account has been successfully connected to our automation platform.';
+  };
+
+  const getStatusTitle = () => {
+    return pageData?.status === 'error' ? 'Connection Failed' : 'Successfully Connected!';
+  };
+
+  const getStatusType = () => {
+    return pageData?.status === 'error' ? 'error' : 'success';
+  };
+
+  // Get the correct robot image based on status
+  const getRobotImage = () => {
+    return pageData?.status === 'error' 
+      ? '/icons/error.png'  // Error robot
+      : '/icons/success.png'; // Success robot
+  };
+
+  const getRobotAlt = () => {
+    return pageData?.status === 'error' ? 'Error Robot' : 'Success Robot';
+  };
+
+  const handleClose = () => {
+    if (onClose) {
+      // Called from MainApp component
+      onClose();
+    } else {
+      // Called from URL route
+      navigate('/');
+    }
+  };
+
+  if (!pageData) {
+    return null; // Don't render anything until we have data
+  }
 
   return (
     <div className="success-page-root">
-      <NavigationBar />
-
       <AnimatedBackground>
-        {/* Left fixed panel wrapper for StatusCard */}
+        <NavigationBar />
+        
         <div className="success-left-panel">
           <StatusCard
-            type="success"
-            title="Connection Successful!"
-            message={message}
+            type={getStatusType()}
+            title={getStatusTitle()}
+            message={getStatusMessage()}
             redirectAfterMs={10000}
             redirectTo="/"
-            onClose={() => navigate('/')}
+            onClose={handleClose}
           />
         </div>
 
-        {/* Right floating robot illustration */}
-        <div className="success-robot-wrapper" aria-hidden="true">
+        {/* Always show robot - success.png or error.png */}
+        <div className="success-robot-wrapper">
+          <div className="success-robot-shadow"></div>
           <img
-            src="/src/assets/icons/success.png"
-            alt="robot success"
+            src={getRobotImage()}
+            alt={getRobotAlt()}
             className="success-robot-image"
-            loading="eager"
+            onError={(e) => {
+              console.error('Robot image failed to load:', e.target.src);
+              // Fallback - hide image if it fails to load
+              e.target.style.display = 'none';
+            }}
           />
-          <div className="success-robot-shadow" />
         </div>
       </AnimatedBackground>
     </div>

@@ -18,7 +18,7 @@ const HeroSection = () => {
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text'
         }}>
-          Connect Once. Automate the Rest.
+          Connect Once. Automate the Rest The.
         </h1>
         
         <p style={{

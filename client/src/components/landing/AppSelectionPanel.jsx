@@ -111,7 +111,7 @@ const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
         </button>
         
         <p className="panel-footer">
-          For any inquiries, please reach out to your administration.
+          For any inquiries, please contact your administrator.
         </p>
       </div>
 

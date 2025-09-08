@@ -4,6 +4,8 @@ import AnimatedBackground from '../components/landing/AnimatedBackground';
 import IntegrationsScroll from '../components/landing/IntegrationsScroll';
 import AppSelectionPanel from '../components/landing/AppSelectionPanel';
 
+
+
 const LandingPage = () => {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
@@ -56,7 +58,7 @@ const LandingPage = () => {
               overflow: 'hidden',
               textOverflow: 'ellipsis'
             }}>
-              CONNECT ONCE. AUTOMATE REST
+              CONNECT ONCE. AUTOMATE THE REST
             </h1>
             
             <p style={{ 
