@@ -92,7 +92,7 @@ const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
             >
               <div className="app-icon-section">
                 <img 
-                  src={`/src/assets/icons/${app.icon}.svg`} 
+                  src={`/public/icons/${app.icon}.svg`} 
                   alt={`${app.label} icon`}
                   className="app-icon"
                 />
@@ -111,7 +111,7 @@ const AppSelectionPanel = ({ onClose, onBrowseMore }) => {
         </button>
         
         <p className="panel-footer">
-          For any inquiries, please contact your administrator.
+          For any inquiries, please reach out to your administration.
         </p>
       </div>
 
